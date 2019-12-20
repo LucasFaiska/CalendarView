@@ -4,16 +4,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--We have top and bottom margins on the TextView so there's more space between
-     continuous selected rows. This means that setting an oval background on it when
-     a single date is selected will result in a the background not being a perfect circle
-     since the view is not square in shape.
-     So we set the background on this view which has a margin on all sides instead-->
     <View
         android:id="@+id/exFourRoundBgView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="4dp" />
+        android:layout_margin="12dp" />
+
+    <View
+        android:id="@+id/selected_middle_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="#25FFE14B"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp" />
+
+    <View
+        android:id="@+id/selected_start_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="@drawable/example_4_continuous_selected_bg_start"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp" />
+
+    <View
+        android:id="@+id/selected_end_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="@drawable/example_4_continuous_selected_bg_end"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp" />
 
     <TextView
         android:id="@+id/exFourDayText"
@@ -22,7 +46,8 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
         android:gravity="center"
-        android:textSize="16sp"
+        android:textSize="12sp"
         tools:text="22" />
+
 </FrameLayout>
 

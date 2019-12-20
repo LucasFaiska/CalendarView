@@ -4,10 +4,12 @@ package com.kizitonwose.calendarviewsample
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.*
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -41,16 +43,6 @@ class Example4Fragment : BaseFragment(), HasToolbar, HasBackButton {
     private var startDate: LocalDate? = null
     private var endDate: LocalDate? = null
 
-    private val headerDateFormatter = DateTimeFormatter.ofPattern("EEE'\n'd MMM")
-
-    private val startBackground: GradientDrawable by lazy {
-        requireContext().getDrawableCompat(R.drawable.example_4_continuous_selected_bg_start) as GradientDrawable
-    }
-
-    private val endBackground: GradientDrawable by lazy {
-        requireContext().getDrawableCompat(R.drawable.example_4_continuous_selected_bg_end) as GradientDrawable
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.example_4_fragment, container, false)
@@ -62,18 +54,18 @@ class Example4Fragment : BaseFragment(), HasToolbar, HasBackButton {
         // We set the radius of the continuous selection background drawable dynamically
         // since the view size is `match parent` hence we cannot determine the appropriate
         // radius value which would equal half of the view's size beforehand.
-        exFourCalendar.post {
-            val radius = ((exFourCalendar.width / 7) / 2).toFloat()
-            startBackground.setCornerRadius(topLeft = radius, bottomLeft = radius)
-            endBackground.setCornerRadius(topRight = radius, bottomRight = radius)
-        }
+        //exFourCalendar.post {
+        //    val radius = ((exFourCalendar.width / 7) / 2).toFloat()
+        //    startBackground.setCornerRadius(topLeft = radius, bottomLeft = radius)
+        //    endBackground.setCornerRadius(topRight = radius, bottomRight = radius)
+        //}
 
         // Set the First day of week depending on Locale
         val daysOfWeek = daysOfWeekFromLocale()
         legendLayout.children.forEachIndexed { index, view ->
             (view as TextView).apply {
                 text = daysOfWeek[index].getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
                 setTextColorRes(R.color.example_4_grey)
             }
         }
@@ -86,6 +78,9 @@ class Example4Fragment : BaseFragment(), HasToolbar, HasBackButton {
             lateinit var day: CalendarDay // Will be set when this container is bound.
             val textView = view.exFourDayText
             val roundBgView = view.exFourRoundBgView
+            val selectedMiddleBackground = view.selected_middle_background
+            val selectedStartBackground = view.selected_start_background
+            val selectedEndBackground = view.selected_end_background
 
             init {
                 view.setOnClickListener {
@@ -102,7 +97,6 @@ class Example4Fragment : BaseFragment(), HasToolbar, HasBackButton {
                             startDate = date
                         }
                         exFourCalendar.notifyCalendarChanged()
-                        bindSummaryViews()
                     }
                 }
             }
@@ -113,6 +107,9 @@ class Example4Fragment : BaseFragment(), HasToolbar, HasBackButton {
                 container.day = day
                 val textView = container.textView
                 val roundBgView = container.roundBgView
+                val selectedMiddleBackground = container.selectedMiddleBackground
+                var selectedStartBackground = container.selectedStartBackground
+                var selectedEndBackground = container.selectedEndBackground
 
                 textView.text = null
                 textView.background = null
@@ -126,26 +123,24 @@ class Example4Fragment : BaseFragment(), HasToolbar, HasBackButton {
                     } else {
                         when {
                             startDate == day.date && endDate == null -> {
-                                textView.setTextColorRes(R.color.white)
+                                textView.setTextColorRes(R.color.black)
                                 roundBgView.makeVisible()
+                                selectedMiddleBackground.makeInVisible()
+                                selectedStartBackground.makeInVisible()
+                                selectedEndBackground.makeInVisible()
                                 roundBgView.setBackgroundResource(R.drawable.example_4_single_selected_bg)
                             }
                             day.date == startDate -> {
-                                textView.setTextColorRes(R.color.white)
-                                textView.background = startBackground
+                                textView.setTextColorRes(R.color.black)
+                                selectedStartBackground.makeVisible()
                             }
                             startDate != null && endDate != null && (day.date > startDate && day.date < endDate) -> {
                                 textView.setTextColorRes(R.color.white)
-                                textView.setBackgroundResource(R.drawable.example_4_continuous_selected_bg_middle)
+                                selectedMiddleBackground.makeVisible()
                             }
                             day.date == endDate -> {
-                                textView.setTextColorRes(R.color.white)
-                                textView.background = endBackground
-                            }
-                            day.date == today -> {
-                                textView.setTextColorRes(R.color.example_4_grey)
-                                roundBgView.makeVisible()
-                                roundBgView.setBackgroundResource(R.drawable.example_4_today_bg)
+                                textView.setTextColorRes(R.color.black)
+                                selectedEndBackground.makeVisible()
                             }
                             else -> textView.setTextColorRes(R.color.example_4_grey)
                         }
@@ -195,42 +190,6 @@ class Example4Fragment : BaseFragment(), HasToolbar, HasBackButton {
                 container.textView.text = monthTitle
             }
         }
-
-        exFourSaveButton.setOnClickListener click@{
-            val startDate = startDate
-            val endDate = endDate
-            if (startDate != null && endDate != null) {
-                val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-                val text = "Selected: ${formatter.format(startDate)} - ${formatter.format(endDate)}"
-                Snackbar.make(requireView(), text, Snackbar.LENGTH_LONG).show()
-            } else {
-                Snackbar.make(requireView(), "No selection. Searching all Airbnb listings.", Snackbar.LENGTH_LONG)
-                    .show()
-            }
-            fragmentManager?.popBackStack()
-        }
-
-        bindSummaryViews()
-    }
-
-    private fun bindSummaryViews() {
-        if (startDate != null) {
-            exFourStartDateText.text = headerDateFormatter.format(startDate)
-            exFourStartDateText.setTextColorRes(R.color.example_4_grey)
-        } else {
-            exFourStartDateText.text = getString(R.string.start_date)
-            exFourStartDateText.setTextColor(Color.GRAY)
-        }
-        if (endDate != null) {
-            exFourEndDateText.text = headerDateFormatter.format(endDate)
-            exFourEndDateText.setTextColorRes(R.color.example_4_grey)
-        } else {
-            exFourEndDateText.text = getString(R.string.end_date)
-            exFourEndDateText.setTextColor(Color.GRAY)
-        }
-
-        // Enable save button if a range is selected or no date is selected at all, Airbnb style.
-        exFourSaveButton.isEnabled = endDate != null || (startDate == null && endDate == null)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -239,7 +198,7 @@ class Example4Fragment : BaseFragment(), HasToolbar, HasBackButton {
             // Configure menu text to match what is in the Airbnb app.
             exFourToolbar.findViewById<TextView>(R.id.menuItemClear).apply {
                 setTextColor(requireContext().getColorCompat(R.color.example_4_grey))
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
                 isAllCaps = false
             }
         }
@@ -250,7 +209,6 @@ class Example4Fragment : BaseFragment(), HasToolbar, HasBackButton {
             startDate = null
             endDate = null
             exFourCalendar.notifyCalendarChanged()
-            bindSummaryViews()
             return true
         }
         return super.onOptionsItemSelected(item)
