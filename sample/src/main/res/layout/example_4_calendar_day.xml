@@ -8,36 +8,60 @@
         android:id="@+id/exFourRoundBgView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="12dp" />
+        android:background="@drawable/example_4_single_selected_bg"
+        android:layout_margin="14dp" />
 
-    <View
-        android:id="@+id/selected_middle_background"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        android:background="#25FFE14B"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp" />
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <View
+            android:id="@+id/selected_middle_background_left"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            android:background="#25FFE14B"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:layout_weight="0.5" />
+
+        <View
+            android:id="@+id/selected_middle_background_right"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            android:background="#25FFE14B"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:layout_weight="0.5"/>
+
+    </LinearLayout>
 
     <View
         android:id="@+id/selected_start_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        android:background="@drawable/example_4_continuous_selected_bg_start"
-        android:layout_marginLeft="12dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp" />
+        android:background="@drawable/example_4_single_selected_bg"
+        android:layout_margin="14dp" />
 
     <View
         android:id="@+id/selected_end_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        android:background="@drawable/example_4_continuous_selected_bg_end"
-        android:layout_marginRight="12dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp" />
+        android:background="@drawable/example_4_single_selected_bg"
+        android:layout_margin="14dp" />
+
+    <View
+        android:id="@+id/midle_corner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="@drawable/example_4_midle_corners"
+        android:layout_margin="14dp" />
 
     <TextView
         android:id="@+id/exFourDayText"
