@@ -76,7 +76,8 @@ class Example4Fragment : BaseFragment(), HasToolbar, HasBackButton {
             val selectedMiddleBackgroundRight = view.selected_middle_background_right
             val selectedStartBackground = view.selected_start_background
             val selectedEndBackground = view.selected_end_background
-            val midleCorner = view.midle_corner
+            val midleCornerStart = view.midle_corner_start
+            val midleCornerEnd = view.midle_corner_end
 
             init {
                 view.setOnClickListener {
@@ -107,7 +108,8 @@ class Example4Fragment : BaseFragment(), HasToolbar, HasBackButton {
                 val selectedMiddleBackgroundRight = container.selectedMiddleBackgroundRight
                 var selectedStartBackground = container.selectedStartBackground
                 var selectedEndBackground = container.selectedEndBackground
-                var midleCorner = container.midleCorner
+                var midleCornerStart = container.midleCornerStart
+                var midleCornerEnd = container.midleCornerEnd
 
                 textView.text = null
                 textView.background = null
@@ -116,7 +118,8 @@ class Example4Fragment : BaseFragment(), HasToolbar, HasBackButton {
                 selectedEndBackground.makeInVisible()
                 selectedMiddleBackgroundLeft.makeInVisible()
                 selectedMiddleBackgroundRight.makeInVisible()
-                midleCorner.makeInVisible()
+                midleCornerStart.makeInVisible()
+                midleCornerEnd.makeInVisible()
 
                 if (day.owner == DayOwner.THIS_MONTH) {
                     textView.text = day.day.toString()
@@ -145,11 +148,11 @@ class Example4Fragment : BaseFragment(), HasToolbar, HasBackButton {
                                 selectedMiddleBackgroundRight.makeVisible()
 
                                 if (day.date.dayOfWeek == DayOfWeek.SATURDAY) {
-                                    midleCorner.makeVisible()
+                                    midleCornerEnd.makeVisible()
                                     selectedMiddleBackgroundRight.makeInVisible()
                                 }
                                 if (day.date.dayOfWeek == DayOfWeek.SUNDAY) {
-                                    midleCorner.makeVisible()
+                                    midleCornerStart.makeVisible()
                                     selectedMiddleBackgroundLeft.makeInVisible()
                                 }
                             }
@@ -159,6 +162,38 @@ class Example4Fragment : BaseFragment(), HasToolbar, HasBackButton {
                                 selectedEndBackground.makeVisible()
                             }
                             else -> textView.setTextColorRes(R.color.example_4_grey)
+                        }
+                    }
+                } else {
+
+                    // This part is to make the coloured selection background continuous
+                    // on the blank in and out dates across various months and also on dates(months)
+                    // between the start and end dates if the selection spans across multiple months.
+
+                    val startDate = startDate
+                    val endDate = endDate
+                    if (startDate != null && endDate != null) {
+                        // Mimic selection of inDates that are less than the startDate.
+                        // Example: When 26 Feb 2019 is startDate and 5 Mar 2019 is endDate,
+                        // this makes the inDates in Mar 2019 for 24 & 25 Feb 2019 look selected.
+                        if ((day.owner == DayOwner.PREVIOUS_MONTH
+                                    && startDate.monthValue == day.date.monthValue
+                                    && endDate.monthValue != day.date.monthValue) ||
+                            // Mimic selection of outDates that are greater than the endDate.
+                            // Example: When 25 Apr 2019 is startDate and 2 May 2019 is endDate,
+                            // this makes the outDates in Apr 2019 for 3 & 4 May 2019 look selected.
+                            (day.owner == DayOwner.NEXT_MONTH
+                                    && startDate.monthValue != day.date.monthValue
+                                    && endDate.monthValue == day.date.monthValue) ||
+
+                            // Mimic selection of in and out dates of intermediate
+                            // months if the selection spans across multiple months.
+                            (startDate < day.date && endDate > day.date
+                                    && startDate.monthValue != day.date.monthValue
+                                    && endDate.monthValue != day.date.monthValue)
+                        ) {
+                            selectedMiddleBackgroundLeft.makeVisible()
+                            selectedMiddleBackgroundRight.makeVisible()
                         }
                     }
                 }
